@@ -1,0 +1,36 @@
+version: "3.8"
+
+networks:
+  multicast_net:
+    driver: bridge
+
+services:
+  simulator:
+    container_name: simulator
+    image: roboticserlangen/simulatorcli:latest
+    restart: unless-stopped
+    environment:
+      GEOMETRY: "2020"
+      REALISM: "RC2021"
+    networks:
+      - multicast_net
+    logging:
+      driver: none
+
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt
+    restart: unless-stopped
+    networks:
+      - multicast_net
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf # Adicionando a configuração personalizada
+
+  receiver:
+    build: .
+    networks:
+      - multicast_net
+    depends_on:
+      - mqtt

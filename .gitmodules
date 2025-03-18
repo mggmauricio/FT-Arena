@@ -1,0 +1,3 @@
+[submodule "mqtt_vision"]
+	path = mqtt_vision
+	url = git@github.com:mggmauricio/mqtt_vision.git

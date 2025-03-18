@@ -1,0 +1,40 @@
+# Byte-compiled / cached files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Editor / OS specific files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Arquivos de log
+logs/
+*.log
+*.out
+
+# Arquivos de configuração locais
+.env
+secrets/
+*.local
+
+# Docker
+*.pid
+*.sock
+*.db
+*.sqlite
+docker-compose.override.yml
+
+# Submodules (permitindo a pasta, mas ignorando arquivos compilados)
+mqtt_vision/*
+!mqtt_vision/.git  # Permite o submódulo ser versionado
+mqtt_vision/data/*.pb2.py
+mqtt_vision/data/__pycache__/
