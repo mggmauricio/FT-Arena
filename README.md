@@ -1,19 +1,39 @@
 # FT Arena - Football Training Arena
 
-FT Arena é um ambiente de treinamento para futebol de robôs, que permite visualizar em tempo real o que acontece no simulador. O projeto é composto por dois componentes principais: um backend baseado em ROS2 e FastAPI, e um frontend que será desenvolvido posteriormente.
+FT Arena é um ambiente de treinamento para futebol de robôs, que permite visualizar em tempo real o que acontece no simulador. O projeto inclui componentes para recepção de dados do simulador SSL via multicast e publicação desses dados via MQTT.
 
 ## Estrutura do Projeto
 
 ```
 FT-Arena/
 │
-├── backend/               # Componente de backend com ROS2 e FastAPI
-│   ├── Dockerfile         # Configuração do Docker para o backend
-│   ├── requirements.txt   # Dependências Python
-│   └── main.py            # Código principal do backend
+├── mqtt_vision/              # Biblioteca para recepção multicast e envio MQTT
+│   ├── data/                 # Arquivos de definição Protobuf e classes geradas
+│   │   ├── __init__.py
+│   │   ├── messages_robocup_ssl_detection_pb2.py
+│   │   ├── messages_robocup_ssl_detection.proto
+│   │   ├── messages_robocup_ssl_geometry_pb2.py
+│   │   ├── messages_robocup_ssl_geometry.proto
+│   │   ├── messages_robocup_ssl_wrapper_pb2.py
+│   │   └── messages_robocup_ssl_wrapper.proto
+│   ├── multicast_mqtt.py     # Implementação principal
+│   └── setup.py              # Configuração para instalação como pacote pip
 │
-└── docker-compose.yml     # Configuração do Docker Compose
+├── Dockerfile                # Configuração do Docker para o serviço receiver
+├── requirements.txt          # Dependências Python
+└── docker-compose.yml        # Configuração dos serviços Docker
 ```
+
+## Componentes do Sistema
+
+### Simulador SSL
+O simulador gRSim envia dados de detecção e geometria via multicast usando o formato Protobuf SSL_WrapperPacket.
+
+### MQTT Broker
+Um broker MQTT (Mosquitto) atua como intermediário para a comunicação entre os componentes do sistema.
+
+### Receiver (mqtt_vision)
+Um serviço que recebe os dados multicast do simulador, decodifica as mensagens Protobuf e publica os dados via MQTT.
 
 ## Requisitos
 
@@ -28,38 +48,51 @@ FT-Arena/
    cd FT-Arena
    ```
 
-2. Inicie o backend:
+2. Inicie apenas o simulador:
    ```bash
-   docker-compose up --build backend
+   docker-compose up simulator
    ```
 
-3. Para parar os contêineres:
+3. Para iniciar o receiver manualmente:
+   ```bash
+   docker-compose up receiver
+   ```
+
+4. Para iniciar todos os serviços (incluindo o broker MQTT):
+   ```bash
+   docker-compose up --build
+   ```
+
+5. Para parar os contêineres:
    ```bash
    docker-compose down
    ```
 
 ## Tecnologias Utilizadas
 
-### Backend
-- ROS2 Jazzy Jalisco
-- FastAPI
-- WebSockets
+- Protocol Buffers (Protobuf) - Para serialização de dados
+- MQTT - Para comunicação publisher/subscriber
+- Docker - Para containerização dos serviços
+- Python - Linguagem principal de desenvolvimento
 
 ## Funcionalidades
 
-- Simulação de um ambiente de futebol de robôs
-- Comunicação via WebSockets para atualizações em tempo real
+- Recepção de dados do simulador SSL via multicast
+- Decodificação de mensagens Protobuf (SSL_WrapperPacket, SSL_DetectionFrame, SSL_GeometryData)
+- Publicação de dados de detecção e geometria via MQTT
+- Containerização dos serviços para fácil implantação
 
 ## Desenvolvimento
 
-### Backend
-O backend é responsável por interagir com o simulador e enviar dados para o frontend via WebSockets. Ele é construído com FastAPI e ROS2.
+### mqtt_vision
+A biblioteca `mqtt_vision` é responsável por conectar-se ao multicast, receber e decodificar mensagens Protobuf do simulador, e publicar esses dados através de um broker MQTT. Ela separa os dados de detecção e geometria em tópicos MQTT distintos.
 
 ## Próximos Passos
 
-- Desenvolver o frontend com Next.js, Tailwind CSS e PixiJS
-- Integrar com um simulador real
-- Implementar algoritmos de aprendizado por reforço
+- Desenvolver um frontend para visualização dos dados
+- Implementar algoritmos de visão computacional para análise dos dados
+- Integrar com ROS2 para controle de robôs
+- Expandir a biblioteca com mais funcionalidades
 
 ## Contribuição
 
