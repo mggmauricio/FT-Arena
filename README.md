@@ -44,7 +44,7 @@ Um serviço que recebe os dados multicast do simulador, decodifica as mensagens 
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/FT-Arena.git
+   git clone https://github.com/mggmauricio/FT-Arena.git
    cd FT-Arena
    ```
 
